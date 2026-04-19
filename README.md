@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StadiumPulse | The Kinetic Horizon
+
+**StadiumPulse** is an intelligent, high-density event logistics engine designed to orchestrate chaos with the precision of a stadium spotlight. Built specifically for complex venues (IPL Cricket matches, Concerts, Comedy Sets), it integrates real-time web architecture, AI-driven automation, and spatial modeling within an incredibly lightweight footprint (< 10MB).
+
+## 🌍 Social Impact & Inclusive Design
+StadiumPulse is built with **Inclusive Design** at its core. Our **Echo-Sync AI logistics feed** isn't just a fun tactical overlay for fans—it serves as a crucial **Accessibility Feature** ensuring that fans with visual impairments can fully experience the game. 
+
+Using Gemini-powered analysis, the system translates real-time crowd dynamics, structural acoustics, and event pacing into **high-detail, AI-narrated audio cues.** This allows visually impaired individuals to engage intimately with the stadium's atmosphere, breaking down invisible barriers.
+
+In addition to accessibility, the platform features a heavily gamified **Eco-Dashboard**. This promotes **Environmental Sustainability** by tracking precise CO₂ displacement and rewarding fans for participating in the global EV Carpool initiative directly from their app.
+
+## 🚀 Key Features
+
+*   **Agentic Logic Layer (Gemini-Powered)**: An autonomous supervisor actively monitors crowd metrics and wait times. If friction is detected (e.g., late food delivery at a vendor), the system instantaneously deploys proactive compensations (like automatic 15% discounts) to smooth over the fan experience.
+*   **WebXR Spatial Wayfinding**: A zero-weight, CSS-driven augmented reality mode inside the Pulse tab. Fans activate a "spatial overlay" utilizing real-time density rendering without bloating the dependency tree.
+*   **Persona 'Vibe' Engine**: Dynamic routing shifts the entire UI paradigm (Colors, AI logic, and Aisle statuses) depending on the venue type—whether it's the Neon Blue of IPL Cricket or the Deep Purple of a Concert.
+*   **Fan-to-Fan Mesh Network**: The Central Hub ensures decentralized request resolution within the crowd itself.
+
+## 🛠️ Tech Stack & Philosophy
+**Performance First**: This Next.js (App Router) project aggressively prioritizes low latency and minimal bundle sizing.
+- **Frontend**: Next.js 16, React 19, Tailwind CSS v4.
+- **State**: React Context API (`EventStateController`).
+- **Graphifyy Synchronized**: Architecture iteratively validated and token-optimized via local LLM Graphify loops.
 
 ## Getting Started
-
-First, run the development server:
-
+First, install the dependencies and run the development server:
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000) with your browser to experience the Kinetic Horizon.

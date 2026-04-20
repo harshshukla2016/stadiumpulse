@@ -513,7 +513,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             <div className={`grid items-center gap-12 lg:grid-cols-2 transition-all duration-700 ${isVisible.creator ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <div className="relative h-[400px] w-full overflow-hidden rounded-2xl border border-white/10 bg-surface-container-high sm:h-[500px] lg:h-[450px]">
                 <Image
-                  alt="Harsh Kumar Shukla"
+                  alt="Harsh Kumar Shukla - StadiumPulse Creator and SAP SD Consultant"
                   className="object-cover object-center"
                   fill
                   priority

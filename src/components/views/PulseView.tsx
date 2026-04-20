@@ -139,6 +139,7 @@ export default function PulseView() {
               {zones.map((zone) => (
                 <g 
                   key={zone.id}
+                  data-testid={`zone-${zone.id}`}
                   className="cursor-pointer transition-all duration-500"
                   onClick={() => {
                     setActiveZone(zone.id);
@@ -258,6 +259,7 @@ export default function PulseView() {
               </div>
               <button 
                 onClick={(e) => { e.stopPropagation(); toggleMic(); }}
+                aria-label={state.isMicActive ? "Stop Microphone" : "Start Microphone"}
                 className={`rounded-full px-2 py-0.5 text-[7px] font-black uppercase tracking-tighter transition-all ${state.isMicActive ? 'bg-error text-white shadow-[0_0_10px_rgba(255,82,82,0.4)]' : 'bg-white/5 text-on-surface/40 hover:bg-white/10 hover:text-on-surface'}`}
               >
                 {state.isMicActive ? 'Live' : 'Go Live'}

@@ -518,16 +518,16 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
         <section id="creator" className="border-t border-white/5 bg-surface-container-lowest py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className={`grid items-center gap-12 lg:grid-cols-2 transition-all duration-700 ${isVisible.creator ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-surface-container-high lg:aspect-[4/3]">
+              <div className="relative h-[400px] w-full overflow-hidden rounded-2xl border border-white/10 bg-surface-container-high sm:h-[500px] lg:h-[450px]">
                 <Image
                   alt="Harsh Kumar Shukla"
-                  className="object-cover"
+                  className="object-cover object-center"
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                   src="/profile.jpg"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-primary/20 to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <p className="text-2xl font-black text-white">Harsh Kumar Shukla</p>
                   <p className="text-sm text-white/80">SAP SD Consultant & Developer</p>

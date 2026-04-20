@@ -66,6 +66,7 @@ const timeline = [
 ];
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
+
   const router = useRouter();
   const [demoState, setDemoState] = useState({ 
     activeFans: 24520, 
@@ -84,7 +85,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
     cta: false 
   });
 
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
 
   const handleEnter = () => {
     if (onEnter) {
@@ -116,14 +117,6 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
       }));
     }, 2000);
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ 
-        x: (e.clientX / window.innerWidth - 0.5) * 8, 
-        y: (e.clientY / window.innerHeight - 0.5) * 8 
-      });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -132,8 +125,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
       clearTimeout(timer5);
       clearTimeout(timer6);
       clearTimeout(timer7);
-      clearInterval(demoInterval);
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.clearInterval(demoInterval);
     };
   }, []);
 
@@ -141,6 +133,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
     <div className="min-h-screen w-full overflow-x-hidden bg-background text-on-surface">
       {/* Navigation */}
       <header className="fixed inset-x-0 top-0 z-50 mx-auto flex w-full items-center justify-between border-b border-white/5 bg-background/80 px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6 lg:px-8">
+
         <div className="flex items-center gap-3">
           <div className="relative">
             <span className="material-symbols-outlined text-primary text-2xl">hub</span>

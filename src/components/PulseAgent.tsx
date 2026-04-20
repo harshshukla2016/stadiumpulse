@@ -3,6 +3,12 @@
 import { useEventEngine } from "@/context/EventContext";
 import { useState, useEffect, useRef } from "react";
 
+/**
+ * PulseAgent: Agentic interface for the command center.
+ * Displays real-time reasoning and acts as the interactive avatar
+ * for the background crowd intelligence engine.
+ * @returns React Component
+ */
 export default function PulseAgent() {
   const { state } = useEventEngine();
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +33,8 @@ export default function PulseAgent() {
       {/* Thought Bubble */}
       {(showBubble || isOpen) && latestInsight && (
         <div 
+          role="status"
+          aria-live="polite"
           className={`glass-panel border-primary/20 p-4 rounded-2xl max-w-[240px] shadow-2xl pointer-events-auto transition-all duration-500 origin-bottom-right ${
             isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-100 translate-y-[-10px]'
           }`}
@@ -54,6 +62,8 @@ export default function PulseAgent() {
 
       {/* Main Agent Orb */}
       <button 
+        aria-label="Toggle Pulse Agent"
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
         className={`pointer-events-auto relative group flex items-center justify-center w-14 h-14 rounded-full transition-all duration-500 ${
           isOpen ? 'bg-primary shadow-[0_0_30px_rgba(148,181,255,0.4)] rotate-90' : 'bg-surface-container-highest shadow-xl hover:scale-110 active:scale-95'

@@ -173,116 +173,225 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
 
       <main>
         {/* Hero Section */}
-        <section className="relative min-h-screen pt-20">
-          <div className="absolute inset-0 z-0">
-            <Image
-              alt="Stadium aerial view"
-              className="object-cover"
-              fill
-              priority
-              sizes="100vw"
-              src="https://images.unsplash.com/photo-1459867813278-8d57b21e9fc7?auto=format&fit=crop&w=2400&q=80"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-tertiary/5" />
+        <section className="relative min-h-screen overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0 z-0 bg-background">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a2e_1px,transparent_1px),linear-gradient(to_bottom,#1a1a2e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
+            
+            {/* Floating Particles */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="animate-float absolute top-1/4 left-1/4 h-2 w-2 rounded-full bg-primary/30" />
+              <div className="animate-float-delayed absolute top-1/3 right-1/3 h-3 w-3 rounded-full bg-secondary/20" />
+              <div className="animate-float-slow absolute bottom-1/4 left-1/3 h-2 w-2 rounded-full bg-tertiary/30" />
+              <div className="animate-float-reverse absolute top-1/2 right-1/4 h-2 w-2 rounded-full bg-primary/20" />
+            </div>
+          </div>
+
+          {/* Animated Rings Graphic */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 hidden lg:block">
+            <div className="animate-spin-slow absolute inset-0 h-[600px] w-[600px] rounded-full border border-primary/10">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-primary/20 backdrop-blur" />
+            </div>
+            <div className="animate-spin-reverse absolute inset-0 h-[500px] w-[500px] rounded-full border border-secondary/20" />
+            <div className="animate-spin-slow absolute inset-0 h-[400px] w-[400px] rounded-full border border-primary/30">
+              <div className="absolute -right-4 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-secondary blur-sm" />
+            </div>
+            <div className="absolute inset-0 flex h-[300px] w-[300px] items-center justify-center">
+              <div className="relative flex h-40 w-40 items-center justify-center">
+                <div className="absolute h-full w-full animate-ping rounded-full bg-secondary/20" />
+                <div className="absolute h-32 w-32 rounded-full border-2 border-secondary/50" />
+                <div className="absolute h-24 w-24 rounded-full border border-primary" />
+                <div className="absolute flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/30">
+                  <span className="material-symbols-outlined text-3xl text-white">hub</span>
+                </div>
+              </div>
+            </div>
           </div>
           
-          <div className="relative z-10 mx-auto grid min-h-[85vh] w-full max-w-7xl items-center gap-12 px-4 pb-12 pt-12 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <div className="relative z-10 mx-auto grid min-h-[85vh] w-full max-w-7xl items-center gap-12 px-4 pb-12 pt-28 sm:px-6 lg:grid-cols-2 lg:px-8">
             <div className={`transition-all duration-1000 ${isVisible.hero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1">
-                  <span className="relative flex h-1.5 w-1.5">
+              <div className="mb-6 flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1.5">
+                  <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-secondary" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-secondary" />
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-secondary">
-                    Live
-                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-secondary">Live</span>
                 </div>
                 <span className="text-[10px] uppercase tracking-widest text-on-surface/40">
-                  Powered by Next.js 16
+                  Next.js 16 • Turbopack
                 </span>
               </div>
 
-              <h1 className="text-5xl font-black uppercase leading-[0.92] tracking-tight text-on-surface sm:text-6xl lg:text-7xl">
-                Orchestrate <span className="text-primary">chaos</span> with
-                <br />
-                <span className="text-primary">precision</span>
-              </h1>
+              <div className="inline-flex flex-col">
+                <h1 className="text-5xl font-black uppercase leading-[0.9] tracking-tight text-on-surface sm:text-6xl lg:text-7xl">
+                  Run the venue
+                </h1>
+                <h1 className="text-5xl font-black uppercase leading-[0.9] tracking-tight text-primary sm:text-6xl lg:text-7xl">
+                  in real-time
+                </h1>
+              </div>
               <p className="mt-6 max-w-lg text-base leading-7 text-on-surface-variant">
-                Real-time crowd dynamics, predictive analytics, and autonomous response 
-                for high-density venues. From IPL matches to global concerts.
+                AI-powered crowd intelligence that predicts bottlenecks, optimizes 
+                flow, and coordinates responses before issues arise.
               </p>
 
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              {/* Stats Row */}
+              <div className="mt-8 flex flex-wrap gap-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-black text-secondary">2.4M+</span>
+                  <span className="text-xs uppercase tracking-widest text-on-surface/60">Fans tracked</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-black text-primary">99.9%</span>
+                  <span className="text-xs uppercase tracking-widest text-on-surface/60">Uptime</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-black text-tertiary">&lt;50ms</span>
+                  <span className="text-xs uppercase tracking-widest text-on-surface/60">Latency</span>
+                </div>
+              </div>
+
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <button
                   onClick={handleEnter}
-                  className="group flex items-center gap-3 rounded-lg bg-gradient-to-r from-primary to-primary-container px-6 py-4 text-sm font-black uppercase tracking-widest text-on-primary-fixed shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/40"
+                  className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-primary to-primary-container px-8 py-5 text-base font-black uppercase tracking-widest text-on-primary-fixed shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/40"
                 >
-                  Launch Dashboard
-                  <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
-                    arrow_forward
+                  <span className="relative z-10 flex items-center gap-3">
+                    Launch Dashboard
+                    <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
+                      rocket_launch
+                    </span>
                   </span>
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 </button>
                 <a
                   href="#features"
-                  className="flex items-center gap-3 rounded-lg border border-white/10 px-6 py-4 text-sm font-black uppercase tracking-widest text-on-surface transition-all hover:border-primary/50"
+                  className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-6 py-5 text-base font-black uppercase tracking-widest text-on-surface transition-all hover:border-primary/50 hover:bg-white/10"
                 >
+                  <span className="material-symbols-outlined">explore</span>
                   Explore Features
                 </a>
               </div>
             </div>
 
+            {/* Right Side - Live Stats Card */}
             <div 
-              className={`relative hidden aspect-square overflow-hidden rounded-2xl border border-white/10 bg-surface-container-low/80 shadow-2xl lg:block transition-all duration-1000 ${isVisible.hero ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}
-              style={{ transform: `perspective(1200px) rotateY(${mousePosition.x * 0.3}deg) rotateX(${-mousePosition.y * 0.3}deg)` }}
+              className={`relative transition-all duration-1000 ${isVisible.hero ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/50 to-background" />
-              <div className="absolute inset-0 flex flex-col p-6">
+              <div className="glass-card relative overflow-hidden rounded-2xl border border-white/10 bg-surface-container-low/60 p-6 shadow-2xl backdrop-blur-md">
+                {/* Header */}
                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
-                    <span className="text-xs font-bold uppercase tracking-widest text-secondary">Live Command</span>
+                  <div className="flex items-center gap-3">
+                    <span className="relative flex h-3 w-3">
+                      <span className="absolute inset-0 animate-ping rounded-full bg-secondary opacity-75" />
+                      <span className="relative flex h-3 w-3 rounded-full bg-secondary" />
+                    </span>
+                    <span className="text-sm font-black uppercase tracking-widest text-secondary">Live Command</span>
                   </div>
-                  <span className="text-[10px] uppercase tracking-widest text-on-surface/40">IPL Final 2026</span>
+                  <div className="flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse" />
+                    <span className="text-[10px] uppercase tracking-widest text-secondary">IPL Final</span>
+                  </div>
                 </div>
                 
+                {/* Main Stats Grid */}
                 <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="rounded-lg bg-surface-container-high/50 p-4">
-                    <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Active Fans</span>
-                    <p className="mt-1 text-2xl font-black text-secondary">
+                  <div className="group relative rounded-xl bg-surface-container-high/50 p-4 transition-all hover:scale-[1.02]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Active Fans</span>
+                      <span className="material-symbols-outlined text-secondary/30 group-hover:text-secondary">group</span>
+                    </div>
+                    <p className="mt-1 text-3xl font-black text-secondary">
                       {demoState.activeFans.toLocaleString()}
                     </p>
+                    <div className="mt-2 h-1 rounded-full bg-surface-container-highest">
+                      <div className="h-full w-[75%] rounded-full bg-secondary transition-all duration-500" />
+                    </div>
                   </div>
-                  <div className="rounded-lg bg-surface-container-high/50 p-4">
-                    <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Crowd Level</span>
-                    <p className="mt-1 text-2xl font-black text-tertiary">{demoState.crowdLevel}</p>
+                  <div className="group relative rounded-xl bg-surface-container-high/50 p-4 transition-all hover:scale-[1.02]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Crowd Level</span>
+                      <span className="material-symbols-outlined text-tertiary/30 group-hover:text-tertiary">people</span>
+                    </div>
+                    <p className="mt-1 text-3xl font-black text-tertiary">{demoState.crowdLevel}</p>
+                    <div className="mt-2 h-1 rounded-full bg-surface-container-highest">
+                      <div className="h-full w-[60%] rounded-full bg-tertiary transition-all duration-500" />
+                    </div>
                   </div>
-                  <div className="rounded-lg bg-surface-container-high/50 p-4">
-                    <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Avg Wait</span>
-                    <p className="mt-1 text-2xl font-black text-primary">{demoState.avgWait}</p>
+                  <div className="group relative rounded-xl bg-surface-container-high/50 p-4 transition-all hover:scale-[1.02]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Avg Wait</span>
+                      <span className="material-symbols-outlined text-primary/30 group-hover:text-primary">schedule</span>
+                    </div>
+                    <p className="mt-1 text-3xl font-black text-primary">{demoState.avgWait}</p>
+                    <div className="mt-2 h-1 rounded-full bg-surface-container-highest">
+                      <div className="h-full w-[40%] rounded-full bg-primary transition-all duration-500" />
+                    </div>
                   </div>
-                  <div className="rounded-lg bg-surface-container-high/50 p-4">
-                    <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Incidents</span>
-                    <p className="mt-1 text-2xl font-black text-error">{demoState.incidents}</p>
+                  <div className="group relative rounded-xl bg-surface-container-high/50 p-4 transition-all hover:scale-[1.02]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Incidents</span>
+                      <span className="material-symbols-outlined text-error/30 group-hover:text-error">warning</span>
+                    </div>
+                    <p className="mt-1 text-3xl font-black text-error">{demoState.incidents}</p>
+                    <div className="mt-2 h-1 rounded-full bg-surface-container-highest">
+                      <div className={`h-full w-[15%] rounded-full transition-all duration-500 ${demoState.incidents > 0 ? 'bg-error' : 'bg-secondary'}`} />
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-auto">
-                  <div className="flex items-center justify-between text-[10px] text-on-surface/40">
-                    <span>North Gate: 78%</span>
-                    <span>South Gate: 65%</span>
-                    <span>West VIP: 42%</span>
-                    <span>East Concourse: 89%</span>
+                {/* Gate Status */}
+                <div className="mt-6 rounded-xl border border-white/5 bg-surface-container-low/50 p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface/60">Gate Distribution</span>
+                    <span className="text-[10px] uppercase tracking-widest text-on-surface/40">Real-time</span>
                   </div>
-                  <div className="mt-2 h-2 rounded-full bg-surface-container-high">
-                    <div className="flex h-full rounded-full overflow-hidden">
-                      <div className="w-[35%] bg-secondary" />
-                      <div className="w-[25%] bg-primary" />
-                      <div className="w-[20%] bg-tertiary" />
-                      <div className="w-[20%] bg-error" />
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="w-16 text-[10px] text-on-surface/60">North</span>
+                      <div className="flex-1 h-2 rounded-full bg-surface-container-highest">
+                        <div className="h-full w-[78%] rounded-full bg-secondary transition-all duration-500" />
+                      </div>
+                      <span className="w-10 text-right text-xs font-bold text-secondary">78%</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-16 text-[10px] text-on-surface/60">South</span>
+                      <div className="flex-1 h-2 rounded-full bg-surface-container-highest">
+                        <div className="h-full w-[65%] rounded-full bg-primary transition-all duration-500" />
+                      </div>
+                      <span className="w-10 text-right text-xs font-bold text-primary">65%</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-16 text-[10px] text-on-surface/60">West</span>
+                      <div className="flex-1 h-2 rounded-full bg-surface-container-highest">
+                        <div className="h-full w-[42%] rounded-full bg-tertiary transition-all duration-500" />
+                      </div>
+                      <span className="w-10 text-right text-xs font-bold text-tertiary">42%</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-16 text-[10px] text-on-surface/60">East</span>
+                      <div className="flex-1 h-2 rounded-full bg-surface-container-highest">
+                        <div className="h-full w-[89%] rounded-full bg-error transition-all duration-500" />
+                      </div>
+                      <span className="w-10 text-right text-xs font-bold text-error">89%</span>
                     </div>
                   </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-4 flex gap-3">
+                  <button
+                    onClick={handleEnter}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary py-3 text-xs font-black uppercase tracking-widest text-on-primary transition-all hover:bg-primary/80"
+                  >
+                    <span className="material-symbols-outlined text-sm">dashboard</span>
+                    Open Dashboard
+                  </button>
+                  <button className="flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-3 text-xs font-black uppercase tracking-widest text-on-surface-variant transition-all hover:border-white/30">
+                    <span className="material-symbols-outlined text-sm">refresh</span>
+                  </button>
                 </div>
               </div>
             </div>

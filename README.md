@@ -1,7 +1,7 @@
 # 🏟️ StadiumPulse | The Kinetic Horizon
 
 <p align="center">
-  <img src=".gemini/antigravity/brain/407ea050-5cbb-494e-80b4-d960b8e8b5f5/stadiumpulse_hero_banner_1776691586433.png" alt="StadiumPulse Hero Banner" width="100%">
+  <img src="public/images/hero_banner.png" alt="StadiumPulse Hero Banner" width="100%">
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@ Experience the stadium like never before with a real-time, WebXR-ready density m
 - **Spatial Wayfinding**: Adaptive routing that reacts to current aisle density.
 
 <p align="center">
-  <img src=".gemini/antigravity/brain/407ea050-5cbb-494e-80b4-d960b8e8b5f5/stadiumpulse_homepage_1776645433182.png" alt="Pulse View Dashboard" width="80%">
+  <img src="public/images/homepage.png" alt="Pulse View Dashboard" width="80%">
 </p>
 
 ### 🤖 Pulse Agent: The Autonomous Supervisor
@@ -41,7 +41,7 @@ A live event mesh that bridges the gap between official data and fan sentiment.
 - **Fan Echoes**: Real-time community sentiment tracking integrated with venue logistics.
 
 <p align="center">
-  <img src=".gemini/antigravity/brain/407ea050-5cbb-494e-80b4-d960b8e8b5f5/stadiumpulse_echo_view_1776645470762.png" alt="Echo Feed" width="80%">
+  <img src="public/images/echo_view.png" alt="Echo Feed" width="80%">
 </p>
 
 ### ♻️ Eco-Symmetry Dashboard

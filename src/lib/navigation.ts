@@ -1,0 +1,127 @@
+export type NavigationHealth = "loading" | "live" | "fallback";
+
+export interface Coordinate {
+  latitude: number;
+  longitude: number;
+}
+
+export interface RouteLineString {
+  type: "LineString";
+  coordinates: number[][];
+}
+
+export interface NavigationIntel {
+  status: NavigationHealth;
+  source: "OSRM" | "Fallback";
+  updatedAt: string;
+  origin: Coordinate & {
+    label: string;
+  };
+  pickup: Coordinate & {
+    label: string;
+  };
+  dropoff: Coordinate & {
+    label: string;
+  };
+  distanceKm: number;
+  durationMinutes: number;
+  routeGeometry: RouteLineString | null;
+  mapEmbedUrl: string;
+  directionsUrl: string;
+  taxi: {
+    provider: "Uber";
+    mode: "handoff";
+    bookingUrl: string;
+    note: string;
+  };
+}
+
+function createMapEmbedUrl(origin: Coordinate, pickup: Coordinate) {
+  const minLon = Math.min(origin.longitude, pickup.longitude) - 0.01;
+  const minLat = Math.min(origin.latitude, pickup.latitude) - 0.01;
+  const maxLon = Math.max(origin.longitude, pickup.longitude) + 0.01;
+  const maxLat = Math.max(origin.latitude, pickup.latitude) + 0.01;
+
+  const url = new URL("https://www.openstreetmap.org/export/embed.html");
+  url.searchParams.set("bbox", `${minLon},${minLat},${maxLon},${maxLat}`);
+  url.searchParams.set("layer", "mapnik");
+  url.searchParams.set("marker", `${pickup.latitude},${pickup.longitude}`);
+  return url.toString();
+}
+
+function createDirectionsUrl(origin: Coordinate, pickup: Coordinate) {
+  const url = new URL("https://www.openstreetmap.org/directions");
+  url.searchParams.set("engine", "fossgis_osrm_car");
+  url.searchParams.set("route", `${origin.latitude},${origin.longitude};${pickup.latitude},${pickup.longitude}`);
+  return url.toString();
+}
+
+function createTaxiUrl(pickup: NavigationIntel["pickup"], dropoff: NavigationIntel["dropoff"]) {
+  const url = new URL("https://m.uber.com/looking");
+  url.searchParams.set("client_id", process.env.NEXT_PUBLIC_UBER_CLIENT_ID || "YOUR_UBER_CLIENT_ID");
+  url.searchParams.set(
+    "pickup",
+    JSON.stringify({
+      latitude: pickup.latitude,
+      longitude: pickup.longitude,
+      addressLine1: pickup.label,
+      addressLine2: "StadiumPulse pickup zone",
+    }),
+  );
+  url.searchParams.set(
+    "drop[0]",
+    JSON.stringify({
+      latitude: dropoff.latitude,
+      longitude: dropoff.longitude,
+      addressLine1: dropoff.label,
+      addressLine2: "Recommended post-event destination",
+    }),
+  );
+  return url.toString();
+}
+
+export function createFallbackNavigationIntel(origin: Coordinate): NavigationIntel {
+  const pickup = {
+    label: "Lot 4 Pickup",
+    latitude: Number((origin.latitude + 0.012).toFixed(6)),
+    longitude: Number((origin.longitude + 0.018).toFixed(6)),
+  };
+  const dropoff = {
+    label: "City Transit Hub",
+    latitude: Number((origin.latitude + 0.042).toFixed(6)),
+    longitude: Number((origin.longitude + 0.038).toFixed(6)),
+  };
+  const distanceKm = 2.4;
+
+  return {
+    status: "fallback",
+    source: "Fallback",
+    updatedAt: new Date(0).toISOString(),
+    origin: {
+      label: "Gate F",
+      latitude: origin.latitude,
+      longitude: origin.longitude,
+    },
+    pickup,
+    dropoff,
+    distanceKm,
+    durationMinutes: 8,
+    routeGeometry: null,
+    mapEmbedUrl: createMapEmbedUrl(origin, pickup),
+    directionsUrl: createDirectionsUrl(origin, pickup),
+    taxi: {
+      provider: "Uber",
+      mode: "handoff",
+      bookingUrl: createTaxiUrl(pickup, dropoff),
+      note: "Taxi booking is a provider handoff. A confirmed ride requires the provider app, user consent, and payment.",
+    },
+  };
+}
+
+export function createNavigationUrls(origin: Coordinate, pickup: NavigationIntel["pickup"], dropoff: NavigationIntel["dropoff"]) {
+  return {
+    mapEmbedUrl: createMapEmbedUrl(origin, pickup),
+    directionsUrl: createDirectionsUrl(origin, pickup),
+    bookingUrl: createTaxiUrl(pickup, dropoff),
+  };
+}

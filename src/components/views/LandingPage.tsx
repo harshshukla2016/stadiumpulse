@@ -525,7 +525,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
+                  src="/profile.jpg"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">

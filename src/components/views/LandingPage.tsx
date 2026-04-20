@@ -157,6 +157,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
           </a>
           <button
             onClick={handleEnter}
+            data-testid="nav-open-app"
             className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-on-primary transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/30"
           >
             Open App
@@ -249,6 +250,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <button
                   onClick={handleEnter}
+                  data-testid="hero-enter-btn"
                   className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-primary to-primary-container px-8 py-5 text-base font-black uppercase tracking-widest text-on-primary-fixed shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/40"
                 >
                   <span className="relative z-10 flex items-center gap-3">

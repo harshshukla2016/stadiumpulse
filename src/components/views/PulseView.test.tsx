@@ -86,4 +86,27 @@ describe('PulseView Component Strict Analysis', () => {
     expect(screen.getByLabelText(/stop microphone/i)).toBeInTheDocument();
     expect(screen.getByText(/^live$/i)).toBeInTheDocument();
   });
+
+  it('updates AR direction and toggles notifications', async () => {
+    jest.useFakeTimers();
+    render(
+      <EventProvider>
+        <PulseView />
+      </EventProvider>
+    );
+
+    // Toggle AR mode to start interval
+    const arToggle = screen.getByRole('button', { name: /webxr/i });
+    fireEvent.click(arToggle);
+
+    act(() => {
+      jest.advanceTimersByTime(200);
+    });
+    // This hits line 19 for arDirection update
+
+    // Coverage for toggleNotify (Queue Sniper)
+    const notifyBtn = screen.getAllByText(/notify when < 5m/i)[0];
+    fireEvent.click(notifyBtn);
+    expect(screen.getByText(/waiting for drop/i)).toBeInTheDocument();
+  });
 });

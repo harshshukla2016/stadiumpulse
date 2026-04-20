@@ -12,9 +12,9 @@ export default function EcoDashboard() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [achievements, setAchievements] = useState<string[]>(["early_adopter"]);
 
-  const transitStatus = state.aisleStatus === "LOCKED" ? "Controlled" : "Low";
-  const { carbon, location, weather } = state.venueIntel;
-  const navigation = state.navigation;
+  const transitStatus = state?.aisleStatus === "LOCKED" ? "Controlled" : "Low";
+  const { carbon, location, weather } = state?.venueIntel || fallbackVenueIntel;
+  const navigation = state?.navigation;
 
   const level = Math.floor(ecoPoints / 50) + 1;
   const nextLevelPoints = level * 50;
@@ -78,13 +78,13 @@ export default function EcoDashboard() {
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface/50 mb-1">Your Route</p>
                 <p className="text-xl font-black text-secondary flex items-center gap-2">
-                  {navigation.pickup.label} 
+                  {navigation?.pickup?.label || "Calculating..."} 
                   <span className="text-xs text-on-surface-variant ml-1 font-bold">via Aisle 112</span>
                 </p>
               </div>
               <div className="text-right">
                 <span className="text-[10px] uppercase tracking-widest text-on-surface/50 font-bold block mb-1">Est. Wait</span>
-                <span className="text-lg font-black text-secondary">{navigation.durationMinutes} min</span>
+                <span className="text-lg font-black text-secondary">{navigation?.durationMinutes || 0} min</span>
               </div>
             </div>
             
@@ -92,7 +92,7 @@ export default function EcoDashboard() {
               <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               <iframe
                 title="StadiumPulse pickup navigation map"
-                src={navigation.mapEmbedUrl}
+                src={navigation?.mapEmbedUrl || ""}
                 className="h-64 w-full"
                 loading="lazy"
                 referrerPolicy="no-referrer"
@@ -120,7 +120,7 @@ export default function EcoDashboard() {
               ) : (
                 <>
                   <span className="material-symbols-outlined text-[14px]">map</span>
-                  Start Navigation · {navigation.distanceKm} km
+                  Start Navigation · {navigation?.distanceKm || 0} km
                 </>
               )}
             </button>
@@ -165,7 +165,7 @@ export default function EcoDashboard() {
               <p className="text-[8px] uppercase tracking-widest text-on-surface/50 font-bold mt-1">CO₂ Prevented</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-surface-container-high/50 transition-all duration-300 hover:scale-105 cursor-default">
-              <span className="text-2xl font-black text-primary block">{state.apiHealth === "live" ? "3" : "1"}<span className="text-[10px]"></span></span>
+              <span className="text-2xl font-black text-primary block">{state?.apiHealth === "live" ? "3" : "1"}<span className="text-[10px]"></span></span>
               <p className="text-[8px] uppercase tracking-widest text-on-surface/50 font-bold mt-1">Events Attended</p>
             </div>
           </div>
@@ -191,16 +191,16 @@ export default function EcoDashboard() {
                 <span className="material-symbols-outlined text-secondary/60 text-sm">electric_bolt</span>
                 <span className="text-[8px] font-black uppercase tracking-[0.3em] text-secondary/80">Grid Carbon</span>
               </div>
-              <p className="text-2xl font-black text-secondary">{carbon.intensity}<span className="text-xs"> gCO2/kWh</span></p>
-              <p className="text-[10px] uppercase tracking-widest text-on-surface/50">{carbon.index} · {carbon.source}</p>
+              <p className="text-2xl font-black text-secondary">{carbon?.intensity || 0}<span className="text-xs"> gCO2/kWh</span></p>
+              <p className="text-[10px] uppercase tracking-widest text-on-surface/50">{carbon?.index || "low"} · {carbon?.source || "Loading"}</p>
             </div>
             <div className="glass-card rounded-lg border border-primary/20 p-4 transition-all duration-300 hover:scale-[1.02] cursor-default">
               <div className="flex items-center gap-2 mb-2">
                 <span className="material-symbols-outlined text-primary/60 text-sm">thermostat</span>
                 <span className="text-[8px] font-black uppercase tracking-[0.3em] text-primary/80">Venue Weather</span>
               </div>
-              <p className="text-2xl font-black text-primary">{weather.temperatureC.toFixed(1)}°C</p>
-              <p className="text-[10px] uppercase tracking-widest text-on-surface/50">{location.city} · {weather.source}</p>
+              <p className="text-2xl font-black text-primary">{weather?.temperatureC?.toFixed(1) || 0}°C</p>
+              <p className="text-[10px] uppercase tracking-widest text-on-surface/50">{location?.city || "Venue"} · {weather?.source || "Loading"}</p>
             </div>
           </div>
 
@@ -213,13 +213,13 @@ export default function EcoDashboard() {
               <div>
                 <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em] block mb-1">Lot 4 Pickup</span>
                 <h3 className="text-xl font-bold">Surge Pricing: <span className="text-primary">{transitStatus === "Controlled" ? "1.8x" : "1.2x"}</span></h3>
-                <p className="mt-1 text-[10px] uppercase tracking-widest text-on-surface/40">{navigation.source} route · {navigation.taxi.provider} handoff</p>
+                <p className="mt-1 text-[10px] uppercase tracking-widest text-on-surface/40">{navigation?.source || "Loading"} route · {navigation?.taxi?.provider || "Uber"} handoff</p>
               </div>
               <span className="material-symbols-outlined text-primary/30 text-3xl group-hover:scale-110 transition-transform">local_taxi</span>
             </div>
             
             <a
-              href={navigation.taxi.bookingUrl}
+              href={navigation?.taxi?.bookingUrl || "#"}
               target="_blank"
               rel="noreferrer"
               className="block w-full rounded-lg border border-transparent bg-primary py-3 text-center text-[10px] font-black uppercase tracking-widest text-background shadow-lg shadow-primary/20 transition-all duration-300 hover:border-primary hover:bg-transparent hover:text-primary active:scale-95"
@@ -227,7 +227,7 @@ export default function EcoDashboard() {
               Open Taxi Booking
             </a>
             <p className="mt-3 text-[10px] leading-relaxed text-on-surface/50">
-              {navigation.taxi.note}
+              {navigation?.taxi?.note || "Booking required."}
             </p>
           </div>
 
@@ -254,6 +254,7 @@ export default function EcoDashboard() {
             <button 
               onClick={handleCarpoolJoin}
               disabled={isCarpoolMatched}
+              aria-label={isCarpoolMatched ? "Carpool joined" : "Join carpool"}
               className={`absolute right-6 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg border transition-all duration-300 active:scale-95 ${
                 isCarpoolMatched 
                   ? 'bg-secondary border-secondary text-background' 

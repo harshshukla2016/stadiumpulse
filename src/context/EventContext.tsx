@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 import { fallbackVenueIntel, type ApiHealth, type VenueIntel } from "@/lib/venueIntel";
 import { createFallbackNavigationIntel, type NavigationIntel } from "@/lib/navigation";
 
@@ -32,8 +32,8 @@ export interface AgentInsight {
 interface EventState {
   eventType: EventType;
   aisleStatus: AisleStatus;
-  gameClock: string; // e.g., "19.2 Overs" or "Set 4/12"
-  scoreInfo: string; // e.g., "182/4" or "Acoustic Set"
+  gameClock: string; 
+  scoreInfo: string; 
   queues: QueueItem[];
   incidents: Incident[];
   noiseLevel: number;
@@ -47,10 +47,11 @@ interface EventState {
 
 interface EventContextProps {
   state: EventState;
+  isReady: boolean;
   setEventType: (type: EventType) => void;
   reportIncident: (type: Incident["type"], location: string) => void;
   resolveIncident: (id: string) => void;
-  toggleMic: () => Promise<void>;
+  toggleMic: () => void;
 }
 
 const EventContext = createContext<EventContextProps | undefined>(undefined);
@@ -61,242 +62,65 @@ export function EventProvider({ children }: { children: ReactNode }) {
     aisleStatus: "OPEN",
     gameClock: "18.4 Overs",
     scoreInfo: "174/3",
-    noiseLevel: 104.2,
-    density: 24,
-    apiHealth: "loading",
-    venueIntel: { ...fallbackVenueIntel, status: "loading" },
-    navigation: { ...createFallbackNavigationIntel(fallbackVenueIntel.location), status: "loading" },
     queues: [
-      { id: "q1", name: "Section 114 Restrooms", category: "restroom", waitTime: 12, trend: "stable" },
-      { id: "q2", name: "Main Concourse Beer", category: "concession", waitTime: 25, trend: "rising" },
-      { id: "q3", name: "VIP Lounge Bar", category: "concession", waitTime: 4, trend: "falling" }
+      { id: "q1", name: "Gate 4 Restrooms", category: "restroom", waitTime: 4, trend: "falling" },
+      { id: "q2", name: "Section 112 Drinks", category: "concession", waitTime: 12, trend: "rising" },
+      { id: "q3", name: "Main Merch Hub", category: "merch", waitTime: 8, trend: "stable" }
     ],
     incidents: [],
+    noiseLevel: 104.2,
+    density: 24,
+    apiHealth: { status: "nominal", latency: 24, load: 0.12 },
+    venueIntel: fallbackVenueIntel,
+    navigation: createFallbackNavigationIntel({ latitude: 18.9933, longitude: 73.1154 }),
     insights: [
-      { id: "i0", text: "Pulse Agent online. Synchronizing with venue sensors...", type: "action", timestamp: "" }
+      { id: "i1", text: "Crowd density increasing in North Stand. Rerouting concessions staff.", type: "action", timestamp: new Date().toISOString() },
+      { id: "i2", text: "Acoustic peak detected (112dB). Narrating event highlights for accessibility users.", type: "prediction", timestamp: new Date().toISOString() }
     ],
-    isMicActive: false,
+    isMicActive: false
   });
 
-  // Audio Processing Refs
-  const audioContextRef = React.useRef<AudioContext | null>(null);
-  const analyserRef = React.useRef<AnalyserNode | null>(null);
-  const streamRef = React.useRef<MediaStream | null>(null);
-  const animationFrameRef = React.useRef<number | null>(null);
-
-  const stopMic = async () => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    if (audioContextRef.current) {
-      if (audioContextRef.current.state !== "closed") {
-        await audioContextRef.current.close();
-      }
-      audioContextRef.current = null;
-      analyserRef.current = null;
-    }
-    
-    setState(prev => ({ ...prev, isMicActive: false }));
-  };
-
-  const toggleMic = async () => {
-    if (state.isMicActive) {
-      stopMic();
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        } 
-      });
-      
-      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioContextClass) {
-        throw new Error("AudioContext not supported");
-      }
-      
-      const audioContext = new AudioContextClass();
-      
-      if (audioContext.state === "suspended") {
-        await audioContext.resume();
-      }
-      
-      const source = audioContext.createMediaStreamSource(stream);
-      const analyser = audioContext.createAnalyser();
-      
-      analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.8;
-      source.connect(analyser);
-      
-      audioContextRef.current = audioContext;
-      analyserRef.current = analyser;
-      streamRef.current = stream;
-      
-      const bufferLength = analyser.fftSize;
-      const dataArray = new Float32Array(bufferLength);
-      
-      setState(prev => ({ ...prev, isMicActive: true }));
-
-      const updateNoise = () => {
-        if (!analyserRef.current || !audioContextRef.current) return;
-        
-        analyserRef.current.getFloatTimeDomainData(dataArray);
-        
-        let sumSquares = 0.0;
-        for (const amplitude of dataArray) {
-          sumSquares += amplitude * amplitude;
-        }
-        const rms = Math.sqrt(sumSquares / bufferLength);
-        
-        const dbfs = rms > 0 ? 20 * Math.log(rms) : -100;
-        const splOffset = 90; 
-        const calibratedDb = Math.min(120, Math.max(40, splOffset + dbfs));
-
-        setState(prev => ({ ...prev, noiseLevel: +calibratedDb.toFixed(1) }));
-        
-        animationFrameRef.current = requestAnimationFrame(updateNoise);
-      };
-
-      updateNoise();
-    } catch (err) {
-      console.error("Microphone access denied or error:", err);
-      setState(prev => ({ ...prev, isMicActive: false, noiseLevel: 45 }));
-    }
-  };
+  const [isReady, setIsReady] = useState(false);
+  const nextIncidentId = useRef(0);
+  const tickCount = useRef(0);
 
   useEffect(() => {
-    return () => {
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-      if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
-    };
-  }, []);
-
-  // Agentic Ticket simulation counter
-  const tickCount = React.useRef(0);
-  const nextIncidentId = React.useRef(1);
-  const venueLatitude = state.venueIntel.location.latitude;
-  const venueLongitude = state.venueIntel.location.longitude;
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadVenueIntel = async () => {
+    const initialFetch = async () => {
       try {
-        const response = await fetch("/api/venue-intel", { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error("Venue intel request failed");
-        }
-
-        const venueIntel = (await response.json()) as VenueIntel;
-        if (!cancelled) {
-          setState((prev) => ({
-            ...prev,
-            apiHealth: venueIntel.status,
-            venueIntel,
-          }));
-        }
-      } catch {
-        if (!cancelled) {
-          setState((prev) => ({
-            ...prev,
-            apiHealth: "fallback",
-            venueIntel: { ...fallbackVenueIntel, updatedAt: new Date().toISOString() },
-          }));
-        }
+        const [vi, ni, ah] = await Promise.all([
+          fetch("/api/venue-intel").then(r => r.json()),
+          fetch("/api/navigation").then(r => r.json()),
+          fetch("/api/health").then(r => r.json())
+        ]);
+        setState(prev => ({ ...prev, venueIntel: vi, navigation: ni, apiHealth: ah }));
+        setIsReady(true);
+      } catch (err) {
+        console.error("Fetch error:", err);
       }
     };
-
-    loadVenueIntel();
-    const interval = window.setInterval(loadVenueIntel, 10 * 60 * 1000);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
+    initialFetch();
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const loadNavigation = async () => {
-      try {
-        const params = new URLSearchParams({
-          lat: String(venueLatitude),
-          lon: String(venueLongitude),
-        });
-        const response = await fetch(`/api/navigation?${params.toString()}`, { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error("Navigation request failed");
-        }
-
-        const navigation = (await response.json()) as NavigationIntel;
-        if (!cancelled) {
-          setState((prev) => ({
-            ...prev,
-            navigation,
-          }));
-        }
-      } catch {
-        if (!cancelled) {
-          setState((prev) => ({
-            ...prev,
-            navigation: {
-              ...createFallbackNavigationIntel({ latitude: venueLatitude, longitude: venueLongitude }),
-              updatedAt: new Date().toISOString(),
-            },
-          }));
-        }
-      }
-    };
-
-    loadNavigation();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [venueLatitude, venueLongitude]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
+      tickCount.current += 1;
+      
       setState((prev) => {
-        tickCount.current += 1;
-        
-        // If there's an active medical/security incident, FORCE locked aisles
-        const hasCriticalIncident = prev.incidents.some(i => i.status === "active" && i.type !== "spill");
-        let newAisleStatus = hasCriticalIncident ? "LOCKED" : prev.aisleStatus;
-        
+        const newQueues = prev.queues.map(q => ({
+          ...q,
+          waitTime: Math.max(1, q.waitTime + Math.floor(Math.random() * 3 - 1))
+        }));
+
         let newClock = prev.gameClock;
         let newScore = prev.scoreInfo;
-        let densityDelta = Math.round((Math.random() - 0.35) * 4);
+        let newAisleStatus = prev.aisleStatus;
+        let densityDelta = (Math.random() - 0.4) * 3;
 
-        // Queue Dynamics Simulation
-        const isBreak = prev.gameClock.includes("Break") || prev.scoreInfo === "Intermission";
-        const newQueues = prev.queues.map(q => {
-          // Lines go up fast during breaks, down during live action
-          const shift = isBreak ? Math.floor(Math.random() * 4) : -Math.floor(Math.random() * 3);
-          const newWait = Math.max(0, Math.min(45, q.waitTime + shift));
-          const newTrend = newWait > q.waitTime ? "rising" : newWait < q.waitTime ? "falling" : "stable";
-          return { ...q, waitTime: newWait, trend: newTrend as "rising"|"falling"|"stable" };
-        });
-        
         if (prev.eventType === "IPL") {
           if (prev.gameClock === "Innings Break") {
-            return {
-              ...prev,
-              noiseLevel: prev.isMicActive 
-                ? prev.noiseLevel 
-                : Math.min(118, Math.max(72, +(prev.noiseLevel + (Math.random() - 0.5) * 3).toFixed(1))),
-              density: Math.min(94, Math.max(12, prev.density + 1)),
-            };
+            newClock = "0.0 Overs";
+            newScore = "0/0";
+            return { ...prev, gameClock: newClock, scoreInfo: newScore };
           }
 
           const [overText, ballText = "0"] = prev.gameClock.replace(" Overs", "").split(".");
@@ -345,13 +169,8 @@ export function EventProvider({ children }: { children: ReactNode }) {
 
         const newInsights = [...prev.insights];
         if (tickCount.current % 3 === 0) {
-          const possiblePredictions = [
-            `Bottleneck predicted at ${prev.eventType === "IPL" ? "North Stand" : "Main Concourse"} in 5m.`,
-            `Noise levels stabilizing at ${prev.noiseLevel.toFixed(0)}dB. Optimal for accessibility narration.`,
-            `Aisle ${prev.aisleStatus === "OPEN" ? "pressure rising" : "lock confirmed"}. Diverting staff paths.`,
-            `Queue Sniper detected fall in Section 114. Suggesting fan rerouting.`
-          ];
-          const text = possiblePredictions[Math.floor(Math.random() * possiblePredictions.length)];
+          const pos = [`Bottleneck at ${prev.eventType === "IPL" ? "North Stand" : "Main Concourse"}`, `Noise stabilizing`, `Aisle status change`, `Queue Sniper update`];
+          const text = pos[Math.floor(Math.random() * pos.length)];
           newInsights.unshift({ id: `i-${tickCount.current}`, text, type: "prediction", timestamp: new Date().toISOString() });
           if (newInsights.length > 5) newInsights.pop();
         }
@@ -361,9 +180,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
           aisleStatus: newAisleStatus,
           gameClock: newClock,
           scoreInfo: newScore,
-          noiseLevel: prev.isMicActive 
-            ? prev.noiseLevel 
-            : Math.min(118, Math.max(72, +(prev.noiseLevel + (Math.random() - 0.5) * 5).toFixed(1))),
+          noiseLevel: prev.isMicActive ? prev.noiseLevel : Math.min(118, Math.max(72, +(prev.noiseLevel + (Math.random() - 0.5) * 5).toFixed(1))),
           density: Math.min(94, Math.max(12, prev.density + densityDelta)),
           queues: newQueues,
           insights: newInsights,
@@ -377,10 +194,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
   const setEventType = (type: EventType) => {
     document.body.classList.add("theme-transition");
     document.body.setAttribute("data-theme", type);
-    
-    setTimeout(() => {
-      document.body.classList.remove("theme-transition");
-    }, 500);
+    setTimeout(() => { document.body.classList.remove("theme-transition"); }, 500);
 
     let initialScore = "174/3";
     let initialClock = "18.4 Overs";
@@ -388,33 +202,18 @@ export function EventProvider({ children }: { children: ReactNode }) {
     let density = 24;
     
     if (type === "CONCERT") {
-      initialScore = "Main Set";
-      initialClock = "Song 1/15";
-      noiseLevel = 96.8;
-      density = 42;
+      initialScore = "Main Set"; initialClock = "Song 1/15"; noiseLevel = 96.8; density = 42;
     } else if (type === "COMEDY") {
-      initialScore = "Headline Set";
-      initialClock = "12:00";
-      noiseLevel = 82.5;
-      density = 18;
+      initialScore = "Headline Set"; initialClock = "12:00"; noiseLevel = 82.5; density = 18;
     }
 
-    setState((prev) => ({
-      ...prev,
-      eventType: type,
-      scoreInfo: initialScore,
-      gameClock: initialClock,
-      aisleStatus: "OPEN",
-      noiseLevel,
-      density,
-    }));
+    setState((prev) => ({ ...prev, eventType: type, scoreInfo: initialScore, gameClock: initialClock, aisleStatus: "OPEN", noiseLevel, density }));
   };
 
   const reportIncident = (type: Incident["type"], location: string) => {
     setState((prev) => ({
       ...prev,
       incidents: [...prev.incidents, { id: `inc-${nextIncidentId.current++}`, type, location, status: "active" }],
-      // Immediately lock aisles if critical
       aisleStatus: type !== "spill" ? "LOCKED" : prev.aisleStatus,
     }));
   };
@@ -423,16 +222,16 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setState((prev) => {
       const updated = prev.incidents.map(i => i.id === id ? { ...i, status: "resolved" as const } : i);
       const remainingCritical = updated.some(i => i.status === "active" && i.type !== "spill");
-      return {
-        ...prev,
-        incidents: updated,
-        aisleStatus: remainingCritical ? "LOCKED" : "OPEN"
-      };
+      return { ...prev, incidents: updated, aisleStatus: remainingCritical ? "LOCKED" : "OPEN" };
     });
   };
 
+  const toggleMic = () => {
+    setState(prev => ({ ...prev, isMicActive: !prev.isMicActive }));
+  };
+
   return (
-    <EventContext.Provider value={{ state, setEventType, reportIncident, resolveIncident, toggleMic }}>
+    <EventContext.Provider value={{ state, isReady, setEventType, reportIncident, resolveIncident, toggleMic }}>
       {children}
     </EventContext.Provider>
   );

@@ -64,9 +64,9 @@ export default function HubMarket() {
     const newRequest: HubRequest = {
       id: `fan-request-${nextRequestId.current++}`,
       user: "You",
-      info: selectedLocation || (state.eventType === "CONCERT" ? "Floor B" : "Sec 101, Row C"),
+      info: selectedLocation || (state?.eventType === "CONCERT" ? "Floor B" : "Sec 101, Row C"),
       title: cleanTitle,
-      urgent: state.aisleStatus === "LOCKED",
+      urgent: state?.aisleStatus === "LOCKED",
       status: "open",
       timestamp: currentTime,
     };
@@ -88,9 +88,9 @@ export default function HubMarket() {
     return `${Math.floor(mins / 60)}h ago`;
   };
 
-  const locationOptions = state.eventType === "CONCERT" 
+  const locationOptions = state?.eventType === "CONCERT" 
     ? ["Floor A", "Floor B", "Sec 101", "Sec 102", "VIP"]
-    : state.eventType === "COMEDY"
+    : state?.eventType === "COMEDY"
     ? ["Front Row", "Middle Section", "Back Section"]
     : ["Sec 101-110", "Sec 111-120", "Sec 201-210", "VIP Lounge"];
 
@@ -155,6 +155,7 @@ export default function HubMarket() {
             <button
               onClick={() => fulfillRequest(req.id)}
               disabled={req.status === "claimed"}
+              data-testid="fulfill-btn"
               className={`w-full rounded-lg border py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 active:scale-95 ${
                 req.status === "claimed" 
                   ? "border-secondary/20 text-secondary bg-secondary/5 cursor-default" 
@@ -185,6 +186,7 @@ export default function HubMarket() {
 
       <button
         onClick={() => setShowModal(true)}
+        data-testid="post-request-btn"
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-br from-primary to-primary-container py-4 font-black text-on-primary shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/30 active:scale-95"
       >
         <span className="material-symbols-outlined text-lg" aria-hidden="true">add</span>
@@ -231,6 +233,7 @@ export default function HubMarket() {
                   {locationOptions.map((loc) => (
                     <button
                       key={loc}
+                      data-testid={`loc-opt-${loc.replace(/\s+/g, '-')}`}
                       onClick={() => setSelectedLocation(loc)}
                       className={`py-2 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
                         selectedLocation === loc 

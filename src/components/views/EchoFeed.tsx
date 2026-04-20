@@ -34,13 +34,13 @@ export default function EchoFeed() {
   const [isListening, setIsListening] = useState(true);
   const animationRef = useRef<number | undefined>(undefined);
   
-  const messages = feedByEvent[state.eventType] || [];
+  const messages = feedByEvent[state?.eventType || "IPL"] || [];
 
   useEffect(() => {
     const generateAudioLevels = () => {
       if (!isListening) return;
       
-      const baseLevel = state.noiseLevel / 120;
+      const baseLevel = (state?.noiseLevel || 45) / 120;
       const newLevels = Array.from({ length: 32 }, () => {
         const variation = Math.random() * 0.4 - 0.2;
         const spike = Math.random() > 0.9 ? 0.3 : 0;
@@ -135,7 +135,7 @@ export default function EchoFeed() {
 
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className="text-center">
-                <span className="text-4xl font-black text-primary/20">{state.noiseLevel.toFixed(0)}</span>
+                <span className="text-4xl font-black text-primary/20">{state?.noiseLevel?.toFixed(0) || 45}</span>
               </div>
             </div>
           </div>
@@ -224,6 +224,7 @@ export default function EchoFeed() {
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button 
             onClick={() => setReporting(true)}
+            data-testid="report-btn"
             className="col-span-2 py-4 bg-error text-background font-black text-sm uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-error/20 active:scale-95 transition-all hover:scale-[1.02] hover:shadow-xl"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
@@ -244,7 +245,7 @@ export default function EchoFeed() {
             <div className="flex gap-2">
               <button disabled={!locInput} onClick={() => handleReport("medical")} className="flex-1 py-3 border border-error text-error bg-error/10 font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-error/20 disabled:opacity-50 transition-all">Medical</button>
               <button disabled={!locInput} onClick={() => handleReport("security")} className="flex-1 py-3 border border-orange-500 text-orange-500 bg-orange-500/10 font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-orange-500/20 disabled:opacity-50 transition-all">Security</button>
-              <button disabled={!locInput} onClick={() => handleReport("spill")} className="flex-1 py-3 border border-blue-400 text-blue-400 bg-blue-400/10 font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-blue-400/20 disabled:opacity-50 transition-all">Mess</button>
+              <button data-testid="report-mess-btn" disabled={!locInput} onClick={() => handleReport("spill")} className="flex-1 py-3 border border-blue-400 text-blue-400 bg-blue-400/10 font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-blue-400/20 disabled:opacity-50 transition-all">Mess</button>
             </div>
             <button onClick={() => setReporting(false)} className="w-full mt-3 py-2 text-[10px] uppercase font-bold text-on-surface-variant hover:text-on-surface transition-colors">Cancel</button>
           </div>
@@ -285,7 +286,7 @@ export default function EchoFeed() {
                       </div>
                     </div>
                     {incident.status === 'active' ? (
-                      <button onClick={() => resolveIncident(incident.id)} className="px-3 py-1.5 bg-background border border-white/10 rounded-lg text-[10px] font-bold uppercase hover:bg-secondary hover:border-secondary hover:text-background transition-all active:scale-95">Resolve</button>
+                      <button data-testid="resolve-btn" onClick={() => resolveIncident(incident.id)} className="px-3 py-1.5 bg-background border border-white/10 rounded-lg text-[10px] font-bold uppercase hover:bg-secondary hover:border-secondary hover:text-background transition-all active:scale-95">Resolve</button>
                     ) : (
                       <span className="text-[9px] uppercase tracking-widest font-black text-secondary">Cleared</span>
                     )}

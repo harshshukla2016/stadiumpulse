@@ -520,9 +520,10 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             <div className={`grid items-center gap-12 lg:grid-cols-2 transition-all duration-700 ${isVisible.creator ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-surface-container-high lg:aspect-[4/3]">
                 <Image
-                  alt="Creator profile"
+                  alt="Harsh Kumar Shukla"
                   className="object-cover"
                   fill
+                  priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
                 />

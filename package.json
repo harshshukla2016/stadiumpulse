@@ -2,6 +2,21 @@
   "name": "stadium-pulse",
   "version": "0.1.0",
   "private": true,
+  "description": "StadiumPulse | Real-time AI-powered venue logistics and crowd intelligence command center.",
+  "author": "Harsh Kumar Shukla",
+  "keywords": [
+    "nextjs",
+    "react",
+    "stadium-logistics",
+    "crowd-intelligence",
+    "ai-agent",
+    "webxr",
+    "real-time"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harshshukla2016/stadiumpulse.git"
+  },
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
     "build": "node node_modules/next/dist/bin/next build",

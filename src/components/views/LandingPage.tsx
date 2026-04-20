@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
 interface LandingPageProps {
-  onEnter: () => void;
+  onEnter?: () => void;
 }
 
 const metrics = [
@@ -42,9 +43,18 @@ const timeline = [
 ];
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
+  const router = useRouter();
   const [demoState, setDemoState] = useState({ gate: "Flowing", density: 74, wait: "2m" });
   const [isVisible, setIsVisible] = useState({ hero: false, demo: false, metrics: false, features: false, timeline: false, cta: false });
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleEnter = () => {
+    if (onEnter) {
+      onEnter();
+    } else {
+      router.push("/dashboard");
+    }
+  };
 
   useEffect(() => {
     const timers = [
@@ -88,7 +98,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
           </span>
         </div>
         <button
-          onClick={onEnter}
+          onClick={handleEnter}
           className="relative z-50 pointer-events-auto rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-on-primary transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/30 active:scale-95 sm:px-5"
         >
           Open App
@@ -117,7 +127,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
-                onClick={onEnter}
+                onClick={handleEnter}
                 className="relative z-50 pointer-events-auto group rounded-lg bg-gradient-to-br from-primary to-primary-container px-6 py-4 text-sm font-black uppercase tracking-widest text-on-primary-fixed shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/40 active:scale-95"
               >
                 <span className="flex items-center gap-2">
@@ -126,7 +136,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                 </span>
               </button>
               <button
-                onClick={onEnter}
+                onClick={handleEnter}
                 className="relative z-50 pointer-events-auto rounded-lg border border-outline-variant/50 px-6 py-4 text-sm font-black uppercase tracking-widest text-primary transition-all duration-300 hover:bg-white/5 hover:border-primary/50"
               >
                 View Live Demo
@@ -243,7 +253,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
               The same views adapt for mobile operators, vendor leads, transport partners, and desktop monitors without hiding the live context.
             </p>
             <button
-              onClick={onEnter}
+              onClick={handleEnter}
               className="relative z-50 pointer-events-auto group mt-7 rounded-lg bg-secondary px-6 py-4 text-sm font-black uppercase tracking-widest text-on-secondary transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-secondary/30 active:scale-95"
             >
               <span className="flex items-center justify-center gap-2">

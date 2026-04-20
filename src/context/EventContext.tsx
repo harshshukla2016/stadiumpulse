@@ -42,6 +42,7 @@ interface EventState {
   venueIntel: VenueIntel;
   navigation: NavigationIntel;
   insights: AgentInsight[];
+  isMicActive: boolean;
 }
 
 interface EventContextProps {
@@ -49,6 +50,7 @@ interface EventContextProps {
   setEventType: (type: EventType) => void;
   reportIncident: (type: Incident["type"], location: string) => void;
   resolveIncident: (id: string) => void;
+  toggleMic: () => Promise<void>;
 }
 
 const EventContext = createContext<EventContextProps | undefined>(undefined);
@@ -71,9 +73,112 @@ export function EventProvider({ children }: { children: ReactNode }) {
     ],
     incidents: [],
     insights: [
-      { id: "i0", text: "Pulse Agent online. Synchronizing with venue sensors...", type: "action", timestamp: new Date().toISOString() }
+      { id: "i0", text: "Pulse Agent online. Synchronizing with venue sensors...", type: "action", timestamp: "" }
     ],
+    isMicActive: false,
   });
+
+  // Audio Processing Refs
+  const audioContextRef = React.useRef<AudioContext | null>(null);
+  const analyserRef = React.useRef<AnalyserNode | null>(null);
+  const streamRef = React.useRef<MediaStream | null>(null);
+  const animationFrameRef = React.useRef<number | null>(null);
+
+  const stopMic = async () => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      if (audioContextRef.current.state !== "closed") {
+        await audioContextRef.current.close();
+      }
+      audioContextRef.current = null;
+      analyserRef.current = null;
+    }
+    
+    setState(prev => ({ ...prev, isMicActive: false }));
+  };
+
+  const toggleMic = async () => {
+    if (state.isMicActive) {
+      stopMic();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        } 
+      });
+      
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) {
+        throw new Error("AudioContext not supported");
+      }
+      
+      const audioContext = new AudioContextClass();
+      
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+      
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.8;
+      source.connect(analyser);
+      
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+      streamRef.current = stream;
+      
+      const bufferLength = analyser.fftSize;
+      const dataArray = new Float32Array(bufferLength);
+      
+      setState(prev => ({ ...prev, isMicActive: true }));
+
+      const updateNoise = () => {
+        if (!analyserRef.current || !audioContextRef.current) return;
+        
+        analyserRef.current.getFloatTimeDomainData(dataArray);
+        
+        let sumSquares = 0.0;
+        for (const amplitude of dataArray) {
+          sumSquares += amplitude * amplitude;
+        }
+        const rms = Math.sqrt(sumSquares / bufferLength);
+        
+        const dbfs = rms > 0 ? 20 * Math.log(rms) : -100;
+        const splOffset = 90; 
+        const calibratedDb = Math.min(120, Math.max(40, splOffset + dbfs));
+
+        setState(prev => ({ ...prev, noiseLevel: +calibratedDb.toFixed(1) }));
+        
+        animationFrameRef.current = requestAnimationFrame(updateNoise);
+      };
+
+      updateNoise();
+    } catch (err) {
+      console.error("Microphone access denied or error:", err);
+      setState(prev => ({ ...prev, isMicActive: false, noiseLevel: 45 }));
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
+    };
+  }, []);
 
   // Agentic Ticket simulation counter
   const tickCount = React.useRef(0);
@@ -187,7 +292,9 @@ export function EventProvider({ children }: { children: ReactNode }) {
           if (prev.gameClock === "Innings Break") {
             return {
               ...prev,
-              noiseLevel: Math.min(118, Math.max(72, +(prev.noiseLevel + (Math.random() - 0.5) * 3).toFixed(1))),
+              noiseLevel: prev.isMicActive 
+                ? prev.noiseLevel 
+                : Math.min(118, Math.max(72, +(prev.noiseLevel + (Math.random() - 0.5) * 3).toFixed(1))),
               density: Math.min(94, Math.max(12, prev.density + 1)),
             };
           }
@@ -254,7 +361,9 @@ export function EventProvider({ children }: { children: ReactNode }) {
           aisleStatus: newAisleStatus,
           gameClock: newClock,
           scoreInfo: newScore,
-          noiseLevel: Math.min(118, Math.max(72, +(prev.noiseLevel + (Math.random() - 0.5) * 5).toFixed(1))),
+          noiseLevel: prev.isMicActive 
+            ? prev.noiseLevel 
+            : Math.min(118, Math.max(72, +(prev.noiseLevel + (Math.random() - 0.5) * 5).toFixed(1))),
           density: Math.min(94, Math.max(12, prev.density + densityDelta)),
           queues: newQueues,
           insights: newInsights,
@@ -323,7 +432,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <EventContext.Provider value={{ state, setEventType, reportIncident, resolveIncident }}>
+    <EventContext.Provider value={{ state, setEventType, reportIncident, resolveIncident, toggleMic }}>
       {children}
     </EventContext.Provider>
   );

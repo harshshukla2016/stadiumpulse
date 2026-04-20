@@ -3,6 +3,8 @@
 import { useEventEngine } from "@/context/EventContext";
 import { useId, useMemo, useRef, useState, useEffect } from "react";
 
+const BASE_TIME = 1700000000000;
+
 type HubRequest = {
   id: string;
   user: string;
@@ -21,7 +23,7 @@ export default function HubMarket() {
   const [showModal, setShowModal] = useState(false);
   const [postTitle, setPostTitle] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [currentTime, setCurrentTime] = useState<number>(BASE_TIME);
   const [justPosted, setJustPosted] = useState<string | null>(null);
 
   useEffect(() => {

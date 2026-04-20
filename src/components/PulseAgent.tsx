@@ -1,22 +1,25 @@
 "use client";
 
 import { useEventEngine } from "@/context/EventContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function PulseAgent() {
   const { state } = useEventEngine();
   const [isOpen, setIsOpen] = useState(false);
   const [latestInsight, setLatestInsight] = useState(state.insights[0]);
   const [showBubble, setShowBubble] = useState(false);
+  const prevInsightIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (state.insights[0] && state.insights[0].id !== latestInsight?.id) {
-      setLatestInsight(state.insights[0]);
+    const currentInsight = state.insights[0];
+    if (currentInsight && currentInsight.id !== prevInsightIdRef.current) {
+      prevInsightIdRef.current = currentInsight.id;
+      setLatestInsight(currentInsight);
       setShowBubble(true);
       const timer = setTimeout(() => setShowBubble(false), 8000);
       return () => clearTimeout(timer);
     }
-  }, [state.insights, latestInsight]);
+  }, [state.insights]);
 
   return (
     <div className="fixed bottom-32 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none sm:bottom-40">

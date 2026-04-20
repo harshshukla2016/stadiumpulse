@@ -4,7 +4,7 @@ import { useEventEngine } from "@/context/EventContext";
 import { useId, useState, useEffect } from "react";
 
 export default function PulseView() {
-  const { state } = useEventEngine();
+  const { state, toggleMic } = useEventEngine();
   const [arMode, setArMode] = useState(false);
   const [notifications, setNotifications] = useState<Record<string, boolean>>({});
   const [activeZone, setActiveZone] = useState<number | null>(null);
@@ -211,11 +211,11 @@ export default function PulseView() {
           </div>
 
           <div className={`absolute top-6 right-6 p-3 glass-card rounded-lg z-30 transition-all duration-300 ${arMode ? 'opacity-0 scale-90 pointer-events-none' : 'opacity-100'}`}>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className={`w-2 h-2 rounded-full ${state.aisleStatus === "OPEN" ? "bg-secondary" : "bg-error"} animate-pulse`} />
               <span className="text-[8px] uppercase tracking-widest font-bold text-on-surface/50">Aisle</span>
             </div>
-            </p>
+            <p className="text-lg font-black">{state.aisleStatus}</p>
           </div>
 
           {/* AI Zone Intelligence Overlay */}
@@ -250,23 +250,39 @@ export default function PulseView() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
           <div className="glass-card rounded-lg p-5 transition-all duration-300 hover:scale-[1.02] cursor-default">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[8px] uppercase font-bold text-on-surface/40">Noise</span>
-              <span className="material-symbols-outlined text-primary/50 text-sm">graphic_eq</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[8px] uppercase font-bold text-on-surface/40">Noise</span>
+                {state.isMicActive && (
+                  <span className="flex h-1.5 w-1.5 rounded-full bg-error animate-pulse" />
+                )}
+              </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); toggleMic(); }}
+                className={`rounded-full px-2 py-0.5 text-[7px] font-black uppercase tracking-tighter transition-all ${state.isMicActive ? 'bg-error text-white shadow-[0_0_10px_rgba(255,82,82,0.4)]' : 'bg-white/5 text-on-surface/40 hover:bg-white/10 hover:text-on-surface'}`}
+              >
+                {state.isMicActive ? 'Live' : 'Go Live'}
+              </button>
             </div>
-            <p className="text-3xl font-black">{state.noiseLevel} dB</p>
-            <div className="mt-3 flex gap-1 h-8">
-              {[65, 80, 45, 90, 55, 70, 85, 40, 75, 60].map((h, i) => (
-                <div 
-                  key={i} 
-                  className="flex-1 rounded-sm transition-all duration-300 hover:opacity-100"
-                  style={{ 
-                    height: `${h}%`, 
-                    backgroundColor: h > 75 ? 'var(--error)' : h > 50 ? 'var(--tertiary)' : 'var(--primary)',
-                    opacity: 0.3 + (h / 100) * 0.7,
-                    animationDelay: `${i * 0.05}s`
-                  }} 
-                />
-              ))}
+            <p className={`text-3xl font-black transition-colors duration-300 ${state.isMicActive ? 'text-primary' : 'text-on-surface'}`}>{state.noiseLevel} dB</p>
+            <div className="mt-3 flex gap-1 h-8 items-end">
+              {[65, 80, 45, 90, 55, 70, 85, 40, 75, 60].map((h, i) => {
+                const seed = (state.noiseLevel * 1000 + i * 7) % 20;
+                const micVariance = state.isMicActive ? seed : 0;
+                const height = Math.min(100, Math.max(10, h + micVariance));
+                
+                return (
+                  <div 
+                    key={i} 
+                    className="flex-1 rounded-sm transition-all duration-300"
+                    style={{ 
+                      height: `${height}%`, 
+                      backgroundColor: height > 75 ? 'var(--error)' : height > 50 ? 'var(--tertiary)' : 'var(--primary)',
+                      opacity: 0.3 + (height / 100) * 0.7,
+                      animationDelay: `${i * 0.05}s`
+                    }} 
+                  />
+                );
+              })}
             </div>
           </div>
           <div className="glass-card rounded-lg p-5 transition-all duration-300 hover:scale-[1.02] cursor-default">

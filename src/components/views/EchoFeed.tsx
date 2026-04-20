@@ -93,6 +93,7 @@ export default function EchoFeed() {
             <div className="absolute top-3 right-3">
               <button 
                 onClick={() => setIsListening(!isListening)}
+                aria-label={isListening ? "Pause live acoustic scanning" : "Resume live acoustic scanning"}
                 className={`px-2 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest transition-all ${isListening ? 'bg-secondary text-background' : 'bg-surface-container-high text-on-surface/50'}`}
               >
                 {isListening ? 'ON' : 'OFF'}

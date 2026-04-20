@@ -1,8 +1,20 @@
-import type { Metadata } from "next";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { googleEngine } from "@/lib/firebase";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "StadiumPulse | The Kinetic Horizon",
@@ -18,11 +30,8 @@ export default function RootLayout({
   googleEngine.initialize();
 
   return (
-    <html lang="en" className="dark h-full antialiased">
+    <html lang="en" className={`dark h-full antialiased ${inter.variable} ${outfit.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
       </head>
       <body className="font-body bg-background text-on-surface min-h-full overflow-x-hidden" suppressHydrationWarning>

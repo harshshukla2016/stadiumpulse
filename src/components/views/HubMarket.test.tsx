@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import HubMarket from './HubMarket';
-import { EventProvider, useEventEngine } from '../../context/EventContext';
+import { EventProvider } from '../../context/EventContext';
 import '@testing-library/jest-dom';
 
 jest.useFakeTimers();

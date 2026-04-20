@@ -384,7 +384,9 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
                     <span className="material-symbols-outlined text-sm">dashboard</span>
                     Open Dashboard
                   </button>
-                  <button className="flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-3 text-xs font-black uppercase tracking-widest text-on-surface-variant transition-all hover:border-white/30">
+                  <button 
+                    aria-label="Refresh live stats"
+                    className="flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-3 text-xs font-black uppercase tracking-widest text-on-surface-variant transition-all hover:border-white/30">
                     <span className="material-symbols-outlined text-sm">refresh</span>
                   </button>
                 </div>

@@ -204,6 +204,7 @@ export default function HubMarket() {
               <h3 className="text-xl font-black uppercase tracking-tight">New Request</h3>
               <button 
                 onClick={() => setShowModal(false)}
+                aria-label="Close modal"
                 className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-white/10 transition-colors"
               >
                 <span className="material-symbols-outlined text-sm">close</span>

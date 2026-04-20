@@ -9,7 +9,7 @@ describe('Library Logic Coverage', () => {
     expect(fallback.origin.latitude).toBe(origin.latitude);
 
     const urls = createNavigationUrls(origin, fallback.pickup, fallback.dropoff);
-    expect(urls.mapEmbedUrl).toContain('openstreetmap.org');
+    expect(urls.mapEmbedUrl).toContain('google.com/maps');
     expect(urls.bookingUrl).toContain('uber.com');
   });
 

@@ -33,7 +33,7 @@ describe('LandingPage Surgical Coverage', () => {
     try {
         const creatorLink = screen.getByText(/creator/i);
         fireEvent.click(creatorLink);
-    } catch(e) {}
+    } catch(_e) {}
   });
 
   it('updates stats on interval', async () => {
